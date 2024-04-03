@@ -1,0 +1,61 @@
+import casa.*
+test "la casa tiene viveres del 50 porciento, sin necesidad de reparaciones, rompiendo algo de 1000 pesos" {
+	casaDePepeYJulian.porcentajeViveres(50)
+	casaDePepeYJulian.montoReparaciones(0)
+	casaDePepeYJulian.romperAlgo(1000)
+	assert.that(casaDePepeYJulian.hayViveresSuficientes())
+	assert.that(casaDePepeYJulian.hayQueHacerReparaciones())
+	assert.notThat(casaDePepeYJulian.estaEnOrden())
+
+}
+
+test "cuenta vacía con 20 pesos de costo por operación, si se deposita 1000 pesos, el saldo queda en 980 pesos." {
+	cuentaConGastos.costoOperacion(20)
+	cuentaConGastos.depositar(1000)
+	
+	assert.equals(980 ,cuentaConGastos.saldo())
+}
+test "cuenta con gastos vacía con 50 de costo de operacion, cuenta corriente con 500 de saldo,
+	se depositan 100 y se extraen 200 de la cuenta combinada, queda un saldo de 350,
+	la cuenta con gastos con un saldo de 50 y la cuenta corriente con 300" {
+
+	cuentaConGastos.saldo(0)
+	cuentaConGastos.costoOperacion(50)
+	cuentaCorriente.saldo(500)
+	
+	cuentaCombinada.depositar(100)
+	cuentaCombinada.extraer(200)
+	
+	assert.equals(350, cuentaCombinada.saldo())
+	assert.equals(50, cuentaConGastos.saldo())
+	assert.equals(300, cuentaCorriente.saldo())
+}
+test "mantenimiento de la casa con estrategia mínimo e indispensable, cuenta corriente con saldo 1000, viveres al 20%, calidad 2" {
+	
+	casaDePepeYJulian.porcentajeViveres(20)
+	casaDePepeYJulian.cuentaActual(cuentaCorriente)
+	cuentaCorriente.saldo(1000)
+	casaDePepeYJulian.estrategiaDeAhorro(minimoEIndispensable)
+	minimoEIndispensable.calidad(2)
+	
+	casaDePepeYJulian.hacerMantenimiento()
+	
+	assert.equals(40, casaDePepeYJulian.porcentajeViveres())
+	assert.equals(960, cuentaCorriente.saldo())
+}
+
+
+test "mantenimiento de la casa con full, cuenta corriente con saldo 1000, viveres al 50% y 100 de reparaciones" {
+	
+	casaDePepeYJulian.porcentajeViveres(50)
+	casaDePepeYJulian.montoReparaciones(100)
+	casaDePepeYJulian.cuentaActual(cuentaCorriente)
+	cuentaCorriente.saldo(1000)
+	casaDePepeYJulian.estrategiaDeAhorro(full)
+	
+	casaDePepeYJulian.hacerMantenimiento()
+	
+	assert.equals(90, casaDePepeYJulian.porcentajeViveres())
+	assert.equals(100, casaDePepeYJulian.montoReparaciones())
+	assert.equals(800, cuentaCorriente.saldo())
+}
